@@ -1,0 +1,72 @@
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
+public class BombNumbers {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Integer> numbers = Arrays.stream(scanner.nextLine().split(" "))
+                .map(Integer::parseInt).collect(Collectors.toList());
+        String[] bomb = scanner.nextLine().split("\\s+");
+        int bombNumber = Integer.parseInt(bomb[0]);
+        int bombPower = Integer.parseInt(bomb[1]);
+        int sumAfterDetonation = 0;
+
+        while (numbers.contains(bombNumber)) {
+            if (bombPower > 0) {
+                searchLeftSide(numbers, bombPower, bombNumber);
+
+                int bombIndex = numbers.indexOf(bombNumber);
+
+                searchRightSide(numbers, bombPower, bombNumber);
+            }
+
+            numbers.remove(Integer.valueOf(bombNumber));
+        }
+
+        sumAfterDetonation = sumOfElements(numbers);
+
+        System.out.println(sumAfterDetonation);
+
+    }
+
+    public static void searchRightSide(List<Integer> numbers, int bombPower, int bombNumber) {
+        int countDetonations = 0;
+        while (countDetonations != bombPower) {
+            int bombIndex = numbers.indexOf(bombNumber);
+            if(bombIndex == numbers.size() - 1){
+                break;
+            }
+
+            int indexToRemove = bombIndex + 1;
+            numbers.remove(indexToRemove);
+            countDetonations++;
+        }
+    }
+
+    public static void searchLeftSide(List<Integer> numbers, int bombPower, int bombNumber) {
+        int countDetonations = 0;
+
+        while (countDetonations != bombPower) {
+            int bombIndex = numbers.indexOf(bombNumber);
+            if (bombIndex == 0){
+                break;
+            }
+
+            int indexToRemove = bombIndex - 1;
+            numbers.remove(indexToRemove);
+            countDetonations++;
+        }
+    }
+
+    private static int sumOfElements(List<Integer> numbers) {
+        int sum = 0;
+        for (int n : numbers) {
+            sum += n;
+        }
+        return sum;
+    }
+
+}
