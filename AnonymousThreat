@@ -1,0 +1,110 @@
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
+public class AnonymousThreat {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String value = scanner.nextLine();
+        List<String> input = Arrays.stream(value.split(" "))
+                .collect(Collectors.toList());
+        String inputCommand = scanner.nextLine();
+
+        while (!inputCommand.equals("3:1")) {
+            String[] command = inputCommand.split("\\s+");
+
+            if (command[0].equals("merge")) {
+                int startIndex = Integer.parseInt(command[1]);
+                int endIndex = Integer.parseInt(command[2]);
+                int commandLength = input.size() - 1;
+
+                if (startIndex >= 0 && endIndex <= commandLength) {
+                    mergeElements(input, startIndex, endIndex);
+                    startIndex += 1;
+                    int countRemoveElements = endIndex - startIndex + 1;
+
+                    removeElements(input, startIndex, countRemoveElements);
+                } else {
+                    if (startIndex < 0 || startIndex >= input.size()) {
+                        startIndex = 0;
+                    }
+                    if (endIndex >= input.size()) {
+                        endIndex = input.size() - 1;
+                    }
+
+                    mergeElements(input, startIndex, endIndex);
+                    startIndex += 1;
+                    int countRemoveElements = endIndex - startIndex + 1;
+                    removeElements(input, startIndex, countRemoveElements);
+
+                }
+            } else {
+                int indexOfArrToDivide = Integer.parseInt(command[1]);
+                int partitionsToDivide = Integer.parseInt(command[2]);
+                divideArr(input, indexOfArrToDivide, partitionsToDivide);
+
+            }
+
+
+            inputCommand = scanner.nextLine();
+        }
+
+        System.out.println(String.join(" ", input));
+
+    }
+
+    private static void divideArr(List<String> input, int indexOfArrToDivide, int partitionsToDivide) {
+        String rememberArr = input.get(indexOfArrToDivide); // to remove it after division
+        int arrLength = rememberArr.length();
+
+        int numOfElementsPerArr = arrLength / partitionsToDivide;
+        int remainderOfDivision = arrLength % partitionsToDivide;
+        int lastArrNumElements = arrLength / partitionsToDivide + remainderOfDivision;
+        int countNewArrays = 0;
+        int countElementsInArray = 0;
+
+        int i = indexOfArrToDivide;// position to star add new Arrays
+
+        while (countNewArrays < partitionsToDivide) {
+            String newArr = "";
+
+            for (int j = 0; j < arrLength; j++) { //abcde delim na  2
+                newArr += rememberArr.charAt(j);
+                countElementsInArray++;
+                if (countElementsInArray == numOfElementsPerArr && countNewArrays != partitionsToDivide - 1) {
+                    input.add(i, newArr);
+                    i++;
+                    countNewArrays++;
+                    countElementsInArray = 0;
+                    newArr = "";
+                }
+                if (countNewArrays == partitionsToDivide - 1 && countElementsInArray == lastArrNumElements) {
+                    input.add(i, newArr);
+                    i++;
+                    countNewArrays++;
+                    break;
+                }
+            }
+        }
+
+        input.remove(rememberArr);
+    }
+
+
+    public static void removeElements(List<String> input, int startIndex, int countRemoveElements) {
+        while (countRemoveElements > 0) {
+            input.remove(startIndex);
+            countRemoveElements--;
+        }
+    }
+
+    public static void mergeElements(List<String> input, int startIndex, int endIndex) {
+        String mergeResult = "";
+        for (int i = startIndex; i <= endIndex; i++) {
+            mergeResult += input.get(i);
+        }
+
+        input.set(startIndex, mergeResult);
+    }
+}
