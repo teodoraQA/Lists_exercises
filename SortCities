@@ -1,0 +1,39 @@
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class SortCities {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<String> cities = Arrays.asList(scanner.nextLine().split(","));
+        List<Integer> citySize = Arrays.stream(scanner.nextLine().split(","))
+                .map(Integer::parseInt).collect(Collectors.toList());
+        HashMap<String, Integer> citiesBySize = new HashMap<String, Integer>();
+        for (int i = 0; i < cities.size(); i++) {
+            String currentCity = cities.get(i);
+            if (!citiesBySize.containsKey(currentCity)) {
+                citiesBySize.put(cities.get(i), citySize.get(i));
+            } else {
+                int updateSize = citiesBySize.get(currentCity) + citySize.get(i);
+                citiesBySize.put(currentCity, updateSize);
+            }
+        }
+
+        citiesBySize.entrySet().stream()
+                .forEach(c -> System.out.println(c.getKey() + " " + c.getValue()));
+
+        System.out.println();
+        System.out.println("sorted:");
+
+//        sort the map
+        citiesBySize.entrySet().stream()
+                .sorted((c1, c2) -> {
+                    int result = c2.getValue().compareTo(c1.getValue());
+                    if (result == 0) {
+                        result = c2.getKey().compareTo(c1.getKey());
+                    }
+                    return result;
+                })
+                .forEach(c -> System.out.println(c.getKey() + " " + c.getValue()));
+    }
+}
